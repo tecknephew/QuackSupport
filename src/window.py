@@ -1,17 +1,20 @@
 import logging
 import math
 
+import pyautogui
 import qtawesome as qta
-from PyQt6.QtCore import QPoint, QSettings, Qt, QThread, QUrl, pyqtSignal
+from PyQt6.QtCore import QPoint, QSettings, Qt, QThread, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import (
     QAction,
+    QColor,
     QDesktopServices,
     QFont,
     QKeySequence,
+    QPainter,
+    QPen,
     QShortcut,
-    QTextCursor, QPainter, QPen, QColor,
+    QTextCursor,
 )
-from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
@@ -60,9 +63,9 @@ class OverlayHighlight(QWidget):
         super().__init__(None)  # No parent
         # Make widget transparent and stay on top
         self.setWindowFlags(
-            Qt.WindowType.FramelessWindowHint |
-            Qt.WindowType.WindowStaysOnTopHint |
-            Qt.WindowType.WindowTransparentForInput
+            Qt.WindowType.FramelessWindowHint
+            | Qt.WindowType.WindowStaysOnTopHint
+            | Qt.WindowType.WindowTransparentForInput
         )
 
         # Set all required attributes
@@ -73,7 +76,8 @@ class OverlayHighlight(QWidget):
         # Ensure window has no focus policy
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
-        self.resize(1920, 1080)  # Set to your screen size
+        screen_width, screen_height = pyautogui.size()
+        self.resize(screen_width, screen_height)
         self.center_point = QPoint(200, 200)
         self.radius = 40  # Circle radius in pixels
 
@@ -82,7 +86,9 @@ class OverlayHighlight(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)  # Make it smooth
 
         # Create translucent yellow color
-        highlight_color = QColor(255, 255, 0, 128)  # RGBA format, alpha=128 for 50% transparency
+        highlight_color = QColor(
+            255, 255, 0, 128
+        )  # RGBA format, alpha=128 for 50% transparency
 
         # Set up the pen for circle border
         pen = QPen(QColor(255, 255, 0), 2)  # Solid yellow border
@@ -767,8 +773,7 @@ class MainWindow(QMainWindow):
         self.agent_thread.update_signal.connect(self.update_log)
         self.agent_thread.finished_signal.connect(self.agent_finished)
         self.agent_thread.position_signal.connect(
-            self.overlay.update_position,
-            Qt.ConnectionType.QueuedConnection
+            self.overlay.update_position, Qt.ConnectionType.QueuedConnection
         )
         self.agent_thread.start()  # This will now work properly
 

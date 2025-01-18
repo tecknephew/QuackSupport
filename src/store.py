@@ -46,50 +46,49 @@ class Store:
         Uses pynput for cross-platform compatibility (Windows, macOS, Linux).
         Returns a dictionary containing the type of input received and any relevant details.
         """
-        from pynput import keyboard, mouse
         from threading import Event
-        
+
+        from pynput import keyboard, mouse
+
         input_received = Event()
         result = {"type": None, "details": None}
-        
+
         def on_mouse_click(x, y, button, pressed):
             if pressed:  # Only trigger on press, not release
                 result["type"] = "mouse"
                 result["details"] = {
                     "x": x,
                     "y": y,
-                    "button": str(button)  # Convert button to string as it's an enum
+                    "button": str(button),  # Convert button to string as it's an enum
                 }
                 input_received.set()
                 return False  # Stop listener
-                
+
         def on_keyboard_press(key):
             try:
                 key_char = key.char  # For standard characters
             except AttributeError:
                 key_char = str(key)  # For special keys
-                
+
             result["type"] = "keyboard"
-            result["details"] = {
-                "key": key_char
-            }
+            result["details"] = {"key": key_char}
             input_received.set()
             return False  # Stop listener
-        
+
         # Start listeners
         keyboard_listener = keyboard.Listener(on_press=on_keyboard_press)
         mouse_listener = mouse.Listener(on_click=on_mouse_click)
-        
+
         keyboard_listener.start()
         mouse_listener.start()
-        
+
         # Wait for input
         input_received.wait()
-        
+
         # Clean up listeners (they should already be stopped due to returning False)
         keyboard_listener.stop()
         mouse_listener.stop()
-        
+
         return result
 
     def run_agent(self, update_callback, position_callback):
@@ -133,9 +132,9 @@ class Store:
 
                 ## TODO arrow
 
-                #self.computer_control.perform_action(action)
+                self.computer_control.perform_action(action)
 
-                #logger.info(f"Performed action: {action['type']}")
+                logger.info(f"Performed action: {action['type']}")
                 if counter > 0:
                     wait = self.wait_for_user_input()
                 counter += 1
