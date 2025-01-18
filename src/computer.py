@@ -1,6 +1,5 @@
 import base64
 import io
-import time
 
 import pyautogui
 from PIL import Image
@@ -18,43 +17,29 @@ class ComputerControl:
 
     def perform_action(self, action):
         action_type = action["type"]
-        # Emit position through callback if it exists
-        if self.position_callback:
-            self.position_callback(500, 500)
+
         if action_type == "mouse_move":
             x, y = self.map_from_ai_space(action["x"], action["y"])
-            #if self.position_callback:
-            #    self.position_callback(x, y)
-            #pyautogui.moveTo(x, y)
-            #overlay.update_position(x, y)
+            self.position_callback(int(x), int(y))
         elif action_type == "left_click":
-            pyautogui.click()
-            time.sleep(0.1)  # Add a small delay after clicking
+            return
         elif action_type == "right_click":
-            pyautogui.rightClick()
-            time.sleep(0.1)
+            return
         elif action_type == "middle_click":
-            pyautogui.middleClick()
-            time.sleep(0.1)
+            return
         elif action_type == "double_click":
-            pyautogui.doubleClick()
-            time.sleep(0.1)
+            return
         elif action_type == "left_click_drag":
-            start_x, start_y = pyautogui.position()
-            end_x, end_y = self.map_from_ai_space(action["x"], action["y"])
-            pyautogui.dragTo(end_x, end_y, button="left", duration=0.5)
+            return
         elif action_type == "type":
-            pyautogui.write(
-                action["text"], interval=0.1
-            )  # Add a small delay between keystrokes
+            return
         elif action_type == "key":
-            pyautogui.press(action["text"])
-            time.sleep(0.1)
+            return
         elif action_type == "screenshot":
-            return self.take_screenshot()
+            return
         elif action_type == "cursor_position":
-            x, y = pyautogui.position()
-            return self.map_to_ai_space(x, y)
+            x, y = self.map_from_ai_space(action["x"], action["y"])
+            self.position_callback(int(x), int(y))
         else:
             raise ValueError(f"Unsupported action: {action_type}")
 
