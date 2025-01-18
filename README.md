@@ -13,7 +13,7 @@ Video was sped up 8x btw. [Computer use](https://www.anthropic.com/news/3-5-mode
 
 1. **This is experimental software** - It gives an AI control of your mouse and keyboard. Things can and will go wrong.
 
-2. **Tread Lightly** - If it wipes your computer, sends weird emails, or orders 100 pizzas... that's on you. 
+2. **Tread Lightly** - If it wipes your computer, sends weird emails, or orders 100 pizzas... that's on you.
 
 Anthropic can see your screen through screenshots during actions. Hide sensitive information or private stuff.
 
@@ -57,7 +57,7 @@ python run.py
 
 ## 🤝 Contributing
 
-Issues and PRs are most welcome! Made this is in a day so don't really have a roadmap in mind. Hmu on Twitter @ishanxnagpal if you're got interesting ideas you wanna share. 
+Issues and PRs are most welcome! Made this is in a day so don't really have a roadmap in mind. Hmu on Twitter @ishanxnagpal if you're got interesting ideas you wanna share.
 
 ## 📄 License
 
