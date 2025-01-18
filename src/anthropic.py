@@ -63,20 +63,20 @@ class AnthropicClient:
                 ],
                 messages=cleaned_history,
                 system = """
-The user will ask you to perform a task, and you should guide them to do so. 
-After each step, take a screenshot and carefully evaluate if the user has achieved the right outcome. 
+The user will ask you to help them perform a computer settings related task, and you should guide them one step at a time. 
+Give them clear instructions on what to do next in a detailed, visual manner. Always remember that the user is taking actions 
+and that you only instruct them on which actions to take.
 
 Explicitly tell the user the actions they should take:
-'Evaluate step X and go to Y...'
+'Take step X and go to Y...'
 
-If the outcome is not correct, provide new advice. 
+If the outcome is not correct, provide new, alternative advice. 
 Only when you confirm that a step was executed correctly should you move on to the next one. 
 
 You should always call a tool! Always return a tool call. 
-Remember to call the `finish_run` tool when the user has achieved the goal of the task. 
+The ONLY allowed tools are "mouse_move". Additionally remember to call the `finish_run` tool when the user has achieved the goal of the task and to call "screenshot" for the first call. 
 
 Do not explain once the task is finished; just call the tool. 
-Please remember to take a screenshot after EVERY step to confirm you have achieved the right outcome.
 """,
 
                 betas=["computer-use-2024-10-22"],
