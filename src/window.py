@@ -764,18 +764,18 @@ class MainWindow(QMainWindow):
 
                 if action_type == "type":
                     text = action_data.get("text", "")
-                    msg = f'⌨️ <span style="margin: 0 4px; color: #4CAF50;">Typed</span> <span style="color: #4CAF50">"{text}"</span>'
+                    msg = f'⌨️ <span style="margin: 0 4px; color: #4CAF50;">Type</span> <span style="color: #4CAF50">"{text}"</span>'
                     self.action_log.append(button_style.format(msg))
 
                 elif action_type == "key":
                     key = action_data.get("text", "")
-                    msg = f'⌨️ <span style="margin: 0 4px; color: #4CAF50;">Pressed</span> <span style="color: #4CAF50">{key}</span>'
+                    msg = f'⌨️ <span style="margin: 0 4px; color: #4CAF50;">Press</span> <span style="color: #4CAF50">{key}</span>'
                     self.action_log.append(button_style.format(msg))
 
                 elif action_type == "mouse_move":
                     x = action_data.get("x", 0)
                     y = action_data.get("y", 0)
-                    msg = f'🖱️ <span style="margin: 0 4px; color: #4CAF50;">Moved to</span> <span style="color: #4CAF50">({x}, {y})</span>'
+                    msg = f'🖱️ <span style="margin: 0 4px; color: #4CAF50;">Move to</span> <span style="color: #4CAF50">({x}, {y})</span>'
                     self.action_log.append(button_style.format(msg))
 
                 elif action_type == "screenshot":
