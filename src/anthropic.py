@@ -40,8 +40,8 @@ class AnthropicClient:
                     {
                         "type": "computer_20241022",
                         "name": "computer",
-                        "display_width_px": 1280,
-                        "display_height_px": 800,
+                        "display_width_px": 800, #1280
+                        "display_height_px": 600, #800
                         "display_number": 1,
                     },
                     {
