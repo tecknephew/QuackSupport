@@ -156,6 +156,7 @@ class MainWindow(QMainWindow):
         self.setup_menu_bar()
         self.setup_tray()
         self.setup_shortcuts()
+        self.oldPos = None
 
     def show_api_key_dialog(self):
         dialog = QDialog(self)
@@ -937,10 +938,20 @@ class MainWindow(QMainWindow):
     def mousePressEvent(self, event):
         self.oldPos = event.globalPosition().toPoint()
 
+        if hasattr(self, 'store') and hasattr(self.store, 'handle_click'):
+            self.store.handle_click()
+
+        # Handle window dragging
+        if self.oldPos:
+            delta = QPoint(event.globalPosition().toPoint() - self.oldPos)
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.oldPos = event.globalPosition().toPoint()
+
     def mouseMoveEvent(self, event):
-        delta = QPoint(event.globalPosition().toPoint() - self.oldPos)
-        self.move(self.x() + delta.x(), self.y() + delta.y())
-        self.oldPos = event.globalPosition().toPoint()
+        if self.oldPos:
+            delta = QPoint(event.globalPosition().toPoint() - self.oldPos)
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.oldPos = event.globalPosition().toPoint()
 
     def closeEvent(self, event):
         # Override close event to minimize to tray instead of quitting

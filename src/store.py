@@ -1,5 +1,11 @@
 import json
 import logging
+import platform
+from threading import Event
+
+
+from PyQt6.QtCore import QObject, QEvent, QEventLoop, pyqtSignal
+from PyQt6.QtWidgets import QApplication
 
 from anthropic.types.beta import BetaMessage, BetaTextBlock, BetaToolUseBlock
 
@@ -12,10 +18,54 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+class GlobalClickDetector:
+    def __init__(self):
+        self.platform = platform.system().lower()
+        self.click_received = Event()
+
+    def wait_for_click(self):
+        self.click_received.clear()
+
+        if self.platform == 'darwin':
+            from Quartz import NSEvent, NSLeftMouseDown, NSLeftMouseUp
+            from PyObjCTools import AppHelper
+
+            def handle_event(event):
+                self.click_received.set()
+                return True
+
+            mask = NSLeftMouseDown | NSLeftMouseUp
+            # This actually monitors global events
+            self.monitor = NSEvent.addGlobalMonitorForEventsMatchingMask_handler_(
+                mask, handle_event
+            )
+
+        elif self.platform == 'linux':
+            from Xlib import display, X
+            disp = display.Display()
+            root = disp.screen().root
+            root.grab_button(1, X.AnyModifier, True,
+                             X.ButtonPressMask, X.GrabModeAsync,
+                             X.GrabModeAsync, X.NONE, X.NONE)
+
+            while not self.click_received.is_set():
+                event = root.display.next_event()
+                if event.type == X.ButtonPress:
+                    self.click_received.set()
+
+            disp.close()
+
+        # Wait for the click
+        self.click_received.wait()
+
+
+
+class ClickHandler(QObject):
+    clicked = pyqtSignal()
+
 class Store:
     def __init__(self):
         self.instructions = ""
-        self.fully_auto = True
         self.running = False
         self.error = None
         self.run_history = []
@@ -31,65 +81,19 @@ class Store:
         self.computer_control = ComputerControl()
         self.computer_control.set_position_callback(lambda x, y: None)
 
+        self.click_handler = ClickHandler()
+        self.ready_to_continue = False
+
+    def handle_click(self):
+        self.ready_to_continue = True
+
     def set_position_callback(self, callback):
-        """Set the callback for position updates"""
         self.position_callback = callback
         self.computer_control.set_position_callback(callback)
 
     def set_instructions(self, instructions):
         self.instructions = instructions
         logger.info(f"Instructions set: {instructions}")
-
-    def wait_for_user_input(self):
-        """
-        Waits for either a mouse click or keyboard press from the user.
-        Uses pynput for cross-platform compatibility (Windows, macOS, Linux).
-        Returns a dictionary containing the type of input received and any relevant details.
-        """
-        from threading import Event
-
-        from pynput import keyboard, mouse
-
-        input_received = Event()
-        result = {"type": None, "details": None}
-
-        def on_mouse_click(x, y, button, pressed):
-            if pressed:  # Only trigger on press, not release
-                result["type"] = "mouse"
-                result["details"] = {
-                    "x": x,
-                    "y": y,
-                    "button": str(button),  # Convert button to string as it's an enum
-                }
-                input_received.set()
-                return False  # Stop listener
-
-        def on_keyboard_press(key):
-            try:
-                key_char = key.char  # For standard characters
-            except AttributeError:
-                key_char = str(key)  # For special keys
-
-            result["type"] = "keyboard"
-            result["details"] = {"key": key_char}
-            input_received.set()
-            return False  # Stop listener
-
-        # Start listeners
-        keyboard_listener = keyboard.Listener(on_press=on_keyboard_press)
-        mouse_listener = mouse.Listener(on_click=on_mouse_click)
-
-        keyboard_listener.start()
-        mouse_listener.start()
-
-        # Wait for input
-        input_received.wait()
-
-        # Clean up listeners (they should already be stopped due to returning False)
-        keyboard_listener.stop()
-        mouse_listener.stop()
-
-        return result
 
     def run_agent(self, update_callback, position_callback):
         if self.error:
@@ -104,7 +108,9 @@ class Store:
         self.run_history = [{"role": "user", "content": self.instructions}]
         logger.info("Starting agent run")
 
-        counter = True
+        is_first_action = True
+
+        click_detector = GlobalClickDetector()
 
         while self.running:
             try:
@@ -115,12 +121,9 @@ class Store:
                 action = self.extract_action(message)
                 logger.info(f"Extracted action: {action}")
 
-                if action["type"] in ["finish" , "error" , "mouse_move" , "screenshot"]:
-
+                if action["type"] in ["finish", "error", "mouse_move", "screenshot"]:
                     # Display assistant's message in the chat
                     self.display_assistant_message(message, update_callback)
-
-
 
                     if action["type"] == "error":
                         self.error = action["message"]
@@ -134,15 +137,19 @@ class Store:
                         self.running = False
                         break
 
-                    ## TODO arrow
-
+                    # Perform the action (shows highlight)
                     self.computer_control.perform_action(action)
-
                     logger.info(f"Performed action: {action['type']}")
-                    if counter is not True:
-                        self.wait_for_user_input()
-                    counter = False
 
+                    # Wait for click (except for first action)
+                    if not is_first_action:
+                        update_callback("Please click anywhere to continue...")
+                        click_detector.wait_for_click()
+                        update_callback("Click detected!")
+
+                    is_first_action = False
+
+                # Take screenshot after action
                 screenshot = self.computer_control.take_screenshot()
                 self.run_history.append(
                     {

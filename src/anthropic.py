@@ -75,6 +75,7 @@ Only when you confirm that a step was executed correctly should you move on to t
 
 You should always call a tool! Always return a tool call. 
 The ONLY allowed tools are "mouse_move". Additionally remember to call the `finish_run` tool when the user has achieved the goal of the task and to call "screenshot" for the first call. 
+Only call the `finish_run` tool when you have verified via a screenshot that the user has achieved the goal of the task.
 
 Do not explain once the task is finished; just call the tool. 
 """,
