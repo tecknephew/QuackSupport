@@ -72,26 +72,38 @@ class OverlayHighlight(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-
         # Ensure window has no focus policy
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
-        screen_width, screen_height = pyautogui.size()
-        self.resize(screen_width, screen_height)
-        self.center_point = QPoint(200, 200)
+        # Get screen geometry using Qt instead of pyautogui
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+        
+        # Set the widget geometry to match the screen
+        self.setGeometry(screen_geometry)
+        
+        # Move to top-left corner
+        self.move(0, 0)
+        #screen_width, screen_height = pyautogui.size()
+        print(f"Nicolas {screen_width}")
+        print(f"Nicolas{screen_height}")
+        #self.resize(screen_width, screen_height)
+        self.center_point = QPoint(0, 0)
         self.radius = 40  # Circle radius in pixels
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)  # Make it smooth
 
-        # Create translucent yellow color
+        # Create translucent color
         highlight_color = QColor(
-            255, 255, 0, 128
+            0, 0, 0, 32
         )  # RGBA format, alpha=128 for 50% transparency
 
         # Set up the pen for circle border
-        pen = QPen(QColor(255, 255, 0), 2)  # Solid yellow border
+        pen = QPen(QColor(255, 0, 0), 2)  # Solid red border
         painter.setPen(pen)
 
         # Set the brush for circle fill
@@ -104,7 +116,9 @@ class OverlayHighlight(QWidget):
     def update_position(self, x: int, y: int):
         """Update the circle's center position and redraw."""
         try:
-            self.center_point = QPoint(int(x), int(y))
+            print(f"Nicolas {x}")
+            print(f"Nicolas{y}")
+            self.center_point = QPoint(int(x), int(y-28))
             self.raise_()
             self.show()
             self.update()

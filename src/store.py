@@ -7,7 +7,7 @@ from .anthropic import AnthropicClient
 from .computer import ComputerControl
 
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -104,7 +104,7 @@ class Store:
         self.run_history = [{"role": "user", "content": self.instructions}]
         logger.info("Starting agent run")
 
-        counter = 0
+        counter = True
 
         while self.running:
             try:
@@ -112,32 +112,36 @@ class Store:
                 self.run_history.append(message)
                 logger.debug(f"Received message from Anthropic: {message}")
 
-                # Display assistant's message in the chat
-                self.display_assistant_message(message, update_callback)
-
                 action = self.extract_action(message)
                 logger.info(f"Extracted action: {action}")
 
-                if action["type"] == "error":
-                    self.error = action["message"]
-                    update_callback(f"Error: {self.error}")
-                    logger.error(f"Action extraction error: {self.error}")
-                    self.running = False
-                    break
-                elif action["type"] == "finish":
-                    update_callback("Task completed successfully.")
-                    logger.info("Task completed successfully")
-                    self.running = False
-                    break
+                if action["type"] in ["finish" , "error" , "mouse_move" , "screenshot"]:
 
-                ## TODO arrow
+                    # Display assistant's message in the chat
+                    self.display_assistant_message(message, update_callback)
 
-                self.computer_control.perform_action(action)
 
-                logger.info(f"Performed action: {action['type']}")
-                if counter > 0:
-                    wait = self.wait_for_user_input()
-                counter += 1
+
+                    if action["type"] == "error":
+                        self.error = action["message"]
+                        update_callback(f"Error: {self.error}")
+                        logger.error(f"Action extraction error: {self.error}")
+                        self.running = False
+                        break
+                    elif action["type"] == "finish":
+                        update_callback("Task completed successfully.")
+                        logger.info("Task completed successfully")
+                        self.running = False
+                        break
+
+                    ## TODO arrow
+
+                    self.computer_control.perform_action(action)
+
+                    logger.info(f"Performed action: {action['type']}")
+                    if counter is not True:
+                        self.wait_for_user_input()
+                    counter = False
 
                 screenshot = self.computer_control.take_screenshot()
                 self.run_history.append(

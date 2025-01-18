@@ -20,6 +20,9 @@ class ComputerControl:
 
         if action_type == "mouse_move":
             x, y = self.map_from_ai_space(action["x"], action["y"])
+            print(f"Nicolas {x}")
+            print(f"Nicolas{y}")
+            pyautogui.moveTo(x, y)
             self.position_callback(int(x), int(y))
         elif action_type == "left_click":
             return
