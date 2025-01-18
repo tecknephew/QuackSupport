@@ -67,6 +67,12 @@ class Store:
                     self.running = False
                     break
 
+                ## TODO llm output
+
+                ## TODO arrow
+
+                ## TODO on click blocker
+
                 self.computer_control.perform_action(action)
 
                 logger.info(f"Performed action: {action['type']}")
