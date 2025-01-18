@@ -10,13 +10,23 @@ class ComputerControl:
     def __init__(self):
         self.screen_width, self.screen_height = pyautogui.size()
         pyautogui.PAUSE = 0.5  # Add a small delay between actions for stability
+        self.position_callback = None  # Add callback for position updates
+
+    def set_position_callback(self, callback):
+        """Set the callback for position updates"""
+        self.position_callback = callback
 
     def perform_action(self, action):
         action_type = action["type"]
-
+        # Emit position through callback if it exists
+        if self.position_callback:
+            self.position_callback(500, 500)
         if action_type == "mouse_move":
             x, y = self.map_from_ai_space(action["x"], action["y"])
-            pyautogui.moveTo(x, y)
+            #if self.position_callback:
+            #    self.position_callback(x, y)
+            #pyautogui.moveTo(x, y)
+            #overlay.update_position(x, y)
         elif action_type == "left_click":
             pyautogui.click()
             time.sleep(0.1)  # Add a small delay after clicking

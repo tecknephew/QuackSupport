@@ -20,6 +20,8 @@ class Store:
         self.error = None
         self.run_history = []
         self.last_tool_use_id = None
+        self.computer_control = ComputerControl()
+        self.position_callback = None
 
         try:
             self.anthropic_client = AnthropicClient()
@@ -27,6 +29,12 @@ class Store:
             self.error = str(e)
             logger.error(f"AnthropicClient initialization error: {self.error}")
         self.computer_control = ComputerControl()
+        self.computer_control.set_position_callback(lambda x, y: None)
+
+    def set_position_callback(self, callback):
+        """Set the callback for position updates"""
+        self.position_callback = callback
+        self.computer_control.set_position_callback(callback)
 
     def set_instructions(self, instructions):
         self.instructions = instructions
@@ -84,12 +92,14 @@ class Store:
         
         return result
 
-    def run_agent(self, update_callback):
+    def run_agent(self, update_callback, position_callback):
         if self.error:
             update_callback(f"Error: {self.error}")
             logger.error(f"Agent run failed due to initialization error: {self.error}")
             return
 
+        self.position_callback = position_callback
+        self.computer_control.set_position_callback(position_callback)
         self.running = True
         self.error = None
         self.run_history = [{"role": "user", "content": self.instructions}]
