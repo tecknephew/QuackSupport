@@ -1,4 +1,5 @@
 import logging
+import math
 
 import qtawesome as qta
 from PyQt6.QtCore import QPoint, QSettings, Qt, QThread, QUrl, pyqtSignal
@@ -8,8 +9,9 @@ from PyQt6.QtGui import (
     QFont,
     QKeySequence,
     QShortcut,
-    QTextCursor,
+    QTextCursor, QPainter, QPen, QColor,
 )
+from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
@@ -36,14 +38,72 @@ logger = logging.getLogger(__name__)
 class AgentThread(QThread):
     update_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
+    position_signal = pyqtSignal(int, int)  # New signal for position updates
 
     def __init__(self, store):
         super().__init__()
         self.store = store
 
     def run(self):
-        self.store.run_agent(self.update_signal.emit)
+        def position_callback(x, y):
+            self.position_signal.emit(x, y)
+
+        self.store.run_agent(self.update_signal.emit, position_callback)
         self.finished_signal.emit()
+
+    def update_overlay_position(self, x, y):
+        self.position_signal.emit(x, y)
+
+
+class OverlayHighlight(QWidget):
+    def __init__(self):
+        super().__init__(None)  # No parent
+        # Make widget transparent and stay on top
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint |
+            Qt.WindowType.WindowStaysOnTopHint |
+            Qt.WindowType.WindowTransparentForInput
+        )
+
+        # Set all required attributes
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+
+        # Ensure window has no focus policy
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+        self.resize(1920, 1080)  # Set to your screen size
+        self.center_point = QPoint(200, 200)
+        self.radius = 40  # Circle radius in pixels
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)  # Make it smooth
+
+        # Create translucent yellow color
+        highlight_color = QColor(255, 255, 0, 128)  # RGBA format, alpha=128 for 50% transparency
+
+        # Set up the pen for circle border
+        pen = QPen(QColor(255, 255, 0), 2)  # Solid yellow border
+        painter.setPen(pen)
+
+        # Set the brush for circle fill
+        painter.setBrush(highlight_color)
+
+        # Draw the circle
+        painter.drawEllipse(self.center_point, self.radius, self.radius)
+
+    @pyqtSlot(int, int)
+    def update_position(self, x: int, y: int):
+        """Update the circle's center position and redraw."""
+        try:
+            self.center_point = QPoint(int(x), int(y))
+            self.raise_()
+            self.show()
+            self.update()
+        except Exception as e:
+            print(f"Update position error: {e}")
 
 
 class MainWindow(QMainWindow):
@@ -51,6 +111,10 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.store = store
         self.anthropic_client = anthropic_client
+
+        # Create overlay
+        self.overlay = OverlayHighlight()
+        self.overlay.show()
 
         # Initialize theme settings
         self.settings = QSettings("Grunty", "Preferences")
@@ -702,7 +766,11 @@ class MainWindow(QMainWindow):
         self.agent_thread = AgentThread(self.store)
         self.agent_thread.update_signal.connect(self.update_log)
         self.agent_thread.finished_signal.connect(self.agent_finished)
-        self.agent_thread.start()
+        self.agent_thread.position_signal.connect(
+            self.overlay.update_position,
+            Qt.ConnectionType.QueuedConnection
+        )
+        self.agent_thread.start()  # This will now work properly
 
     def stop_agent(self):
         self.store.stop_run()
