@@ -92,7 +92,15 @@ class OverlayHighlight(QWidget):
         self.center_point = QPoint(0, 0)
         self.radius = 32  # Circle radius in pixels
 
+        # Hide the widget initially
+        self.hide()
+        # Add a flag to track if we've received any position updates
+        self.has_position = False
+
     def paintEvent(self, event):
+        # Only paint if we've received a position update
+        if not self.has_position:
+            return
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)  # Make it smooth
 
@@ -120,6 +128,7 @@ class OverlayHighlight(QWidget):
 
         try:
             self.center_point = QPoint(int(x), int(y - OFFSET))
+            self.has_position = True  # Set flag to true when we get a position
             self.raise_()
             self.show()
             self.update()
@@ -777,6 +786,8 @@ class MainWindow(QMainWindow):
         self.agent_thread = AgentThread(self.store)
         self.agent_thread.update_signal.connect(self.update_log)
         self.agent_thread.finished_signal.connect(self.agent_finished)
+        self.agent_thread.finished_signal.connect(self.overlay.hide)
+
         self.agent_thread.position_signal.connect(
             self.overlay.update_position, Qt.ConnectionType.QueuedConnection
         )
