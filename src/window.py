@@ -90,7 +90,7 @@ class OverlayHighlight(QWidget):
         # screen_width, screen_height = pyautogui.size()
         # self.resize(screen_width, screen_height)
         self.center_point = QPoint(0, 0)
-        self.radius = 40  # Circle radius in pixels
+        self.radius = 32  # Circle radius in pixels
 
     def paintEvent(self, event):
         painter = QPainter(self)
