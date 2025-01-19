@@ -1,5 +1,6 @@
 import logging
 import math
+import platform
 
 import pyautogui
 import qtawesome as qta
@@ -80,16 +81,14 @@ class OverlayHighlight(QWidget):
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
-        
+
         # Set the widget geometry to match the screen
         self.setGeometry(screen_geometry)
-        
+
         # Move to top-left corner
         self.move(0, 0)
-        #screen_width, screen_height = pyautogui.size()
-        print(f"Nicolas {screen_width}")
-        print(f"Nicolas{screen_height}")
-        #self.resize(screen_width, screen_height)
+        # screen_width, screen_height = pyautogui.size()
+        # self.resize(screen_width, screen_height)
         self.center_point = QPoint(0, 0)
         self.radius = 40  # Circle radius in pixels
 
@@ -115,10 +114,12 @@ class OverlayHighlight(QWidget):
     @pyqtSlot(int, int)
     def update_position(self, x: int, y: int):
         """Update the circle's center position and redraw."""
+        OFFSET = 0
+        if platform.system().lower() == "linux":
+            OFFSET = 28
+
         try:
-            print(f"Nicolas {x}")
-            print(f"Nicolas{y}")
-            self.center_point = QPoint(int(x), int(y-28))
+            self.center_point = QPoint(int(x), int(y - OFFSET))
             self.raise_()
             self.show()
             self.update()
@@ -927,7 +928,7 @@ class MainWindow(QMainWindow):
     def mousePressEvent(self, event):
         self.oldPos = event.globalPosition().toPoint()
 
-        if hasattr(self, 'store') and hasattr(self.store, 'handle_click'):
+        if hasattr(self, "store") and hasattr(self.store, "handle_click"):
             self.store.handle_click()
 
         # Handle window dragging
