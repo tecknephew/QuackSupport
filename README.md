@@ -4,7 +4,7 @@ This is a self-hosted desktop app that guides you in completing complex os-level
 
 ## Demo
 
-TODO 
+Take a look at the Quacksupport [demo](https://youtu.be/09hwCE8PrDk)
 
 ## 💡 Inspiration
 
