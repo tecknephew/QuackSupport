@@ -42,7 +42,7 @@ poetry-run python run.py
 - `Ctrl + W`: Minimize to system tray
 - `Ctrl + Q`: Quit application
 
-## 💡 What's next
+## 🚀 What's next
 
 We aim to refine accuracy and latency of our human-in-the-loop AI agent and build the community's trust into the technology, bridging the divide for groups left behind by digitalization and AI. 
 
