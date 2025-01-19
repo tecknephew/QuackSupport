@@ -1,10 +1,16 @@
 # 🦆 Quacksupport
 
-Self-hosted desktop app to have AI control your computer, powered by the new Claude [computer use](https://www.anthropic.com/news/3-5-models-and-computer-use) capability. Allow Claude to take over your laptop and do your tasks for you (or at least attempt to, lol). Written in Python, using PyQt.
+This is a self-hosted desktop app that guides you in completing complex os-level computer tasks without taking control from you. Powered by the new Claude [computer use](https://www.anthropic.com/news/3-5-models-and-computer-use) capability.
 
 ## Demo
 
 TODO 
+
+## 💡 Inspiration
+
+Zach's grandmother once called him because she was frustrated when she couldn’t figure out how to adjust her screen brightness. That call stuck with him (for five long years)—it wasn’t just about brightness; it was about how technology, meant to empower, often leaves the elderly feeling helpless.
+
+For millions like her, even simple digital tasks are overwhelming. Systems prioritising efficiency over accessibility exclude the elderly and tech-illiterate and burden them. Mistakes, like printing the wrong ticket or missing an online step, lead to unnecessary frustration and loss of independence.
 
 ## 🎯 What it does
 Our agent provides step-by-step, visual guidance by spotlighting where users should move their cursor. It empowers them to easily navigate technology, reducing reliance on others and restoring confidence.
