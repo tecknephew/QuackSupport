@@ -1,10 +1,10 @@
-# 🦆 Quacksupport
+# 🦆 QuackSupport
 
 This is a self-hosted desktop app that guides you in completing complex os-level computer tasks without taking control from you. Powered by the new Claude [computer use](https://www.anthropic.com/news/3-5-models-and-computer-use) capability.
 
 ## Demo
 
-Take a look at the Quacksupport [demo](https://youtu.be/09hwCE8PrDk)
+Take a look at the QuackSupport [demo](https://youtu.be/OV150NLVeN8)
 
 ## 💡 Inspiration
 
@@ -46,6 +46,6 @@ poetry-run python run.py
 
 We aim to refine accuracy and latency of our human-in-the-loop AI agent and build the community's trust into the technology, bridging the divide for groups left behind by digitalization and AI. 
 
-We plan to expand the system’s capabilities by integrating voice-based interactions to expand Quacksupport's abilities to enable people suffering by neck-down paralysis. Quacksupport will continue to operate with a human-in-the-loop based system, validating all actions of the AI agent.
+We plan to expand the system’s capabilities by integrating voice-based interactions to expand QuackSupport's abilities to enable people suffering by neck-down paralysis. QuackSupport will continue to operate with a human-in-the-loop based system, validating all actions of the AI agent.
 
 ---

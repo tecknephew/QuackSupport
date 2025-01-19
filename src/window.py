@@ -147,14 +147,14 @@ class MainWindow(QMainWindow):
         self.overlay.show()
 
         # Initialize theme settings
-        self.settings = QSettings("Quacksupport", "Preferences")
+        self.settings = QSettings("QuackSupport", "Preferences")
         self.dark_mode = self.settings.value("dark_mode", True, type=bool)
 
         # Check if API key is missing
         if self.store.error and "ANTHROPIC_API_KEY not found" in self.store.error:
             self.show_api_key_dialog()
 
-        self.setWindowTitle("Quacksupport 🦆💻")
+        self.setWindowTitle("QuackSupport 🦆💻")
         self.setGeometry(100, 100, 450, 600)
         self.setMinimumSize(400, 500)  # Increased minimum size for better usability
 
@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
         title_bar_layout = QHBoxLayout()
         title_bar.setLayout(title_bar_layout)
 
-        title_label = QLabel("Quacksupport 🦆")
+        title_label = QLabel("QuackSupport 🦆")
         title_label.setObjectName("title_label")
         title_label.setFont(QFont("Inter", 16, QFont.Weight.Bold))
         title_label.setStyleSheet("color: #ffffff; padding: 5px;")
@@ -698,7 +698,7 @@ class MainWindow(QMainWindow):
         tray_menu = QMenu()
 
         # Add a title item (non-clickable)
-        title_action = tray_menu.addAction("Quacksupport 🦆")
+        title_action = tray_menu.addAction("QuackSupport 🦆")
         title_action.setEnabled(False)
         tray_menu.addSeparator()
 
@@ -750,7 +750,7 @@ class MainWindow(QMainWindow):
 
         # Show a notification when the app starts
         self.tray_icon.showMessage(
-            "Quacksupport is running",
+            "QuackSupport is running",
             "Click the robot icon in the menu bar to get started!",
             QSystemTrayIcon.MessageIcon.Information,
             3000,
@@ -959,7 +959,7 @@ class MainWindow(QMainWindow):
         event.ignore()
         self.hide()
         self.tray_icon.showMessage(
-            "Quack Support 🦆",
+            "QuackSupport 🦆",
             "Application minimized to tray",
             QSystemTrayIcon.MessageIcon.Information,
             2000,
