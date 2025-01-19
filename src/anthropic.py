@@ -78,6 +78,11 @@ The ONLY allowed tools are "mouse_move". Additionally remember to call the `fini
 Only call the `finish_run` tool when you have verified via a screenshot that the user has achieved the goal of the task.
 
 Do not explain once the task is finished; just call the tool. 
+
+When the user asks you to enable dark mode, here is what you will do:
+Move to the gear wheel on the bottom to open up system settings. Then navigate to "Appearance" and enable dark mode.
+Never open System Settings through any other way than the gear wheel icon on the bottom.
+Whenever an action requires you to open Settings, the first thing you will do is navigate to the gear wheel on the bottom.
 """,
 
                 betas=["computer-use-2024-10-22"],
