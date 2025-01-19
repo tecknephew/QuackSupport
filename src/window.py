@@ -137,15 +137,15 @@ class MainWindow(QMainWindow):
         self.overlay.show()
 
         # Initialize theme settings
-        self.settings = QSettings("Grunty", "Preferences")
+        self.settings = QSettings("Quacksupport", "Preferences")
         self.dark_mode = self.settings.value("dark_mode", True, type=bool)
 
         # Check if API key is missing
         if self.store.error and "ANTHROPIC_API_KEY not found" in self.store.error:
             self.show_api_key_dialog()
 
-        self.setWindowTitle("Grunty 👨💻")
-        self.setGeometry(100, 100, 400, 600)
+        self.setWindowTitle("Quacksupport 🦆💻")
+        self.setGeometry(100, 100, 450, 600)
         self.setMinimumSize(400, 500)  # Increased minimum size for better usability
 
         # Set rounded corners and border
@@ -266,7 +266,7 @@ class MainWindow(QMainWindow):
         title_bar_layout = QHBoxLayout()
         title_bar.setLayout(title_bar_layout)
 
-        title_label = QLabel("Grunty 👨🏽‍💻")
+        title_label = QLabel("Quacksupport 🦆")
         title_label.setObjectName("title_label")
         title_label.setFont(QFont("Inter", 16, QFont.Weight.Bold))
         title_label.setStyleSheet("color: #ffffff; padding: 5px;")
@@ -296,10 +296,6 @@ class MainWindow(QMainWindow):
         title_bar_layout.addWidget(self.theme_button)
 
         # Window controls
-        github_button = QPushButton()
-        github_button.setObjectName("github_button")
-        github_button.setIcon(qta.icon("fa5b.github", color="white"))
-        github_button.setFlat(True)
 
         minimize_button = QPushButton("—")
         minimize_button.setObjectName("minimize_button")
@@ -309,7 +305,6 @@ class MainWindow(QMainWindow):
         close_button.setObjectName("close_button")
         close_button.setFlat(True)
 
-        title_bar_layout.addWidget(github_button)
         title_bar_layout.addWidget(minimize_button)
         title_bar_layout.addWidget(close_button)
         container_layout.addWidget(title_bar)
@@ -618,17 +613,11 @@ class MainWindow(QMainWindow):
         # Apply to all window control buttons
         for button in [
             self.theme_button,
-            self.findChild(QPushButton, "github_button"),
             self.findChild(QPushButton, "minimize_button"),
             self.findChild(QPushButton, "close_button"),
         ]:
             if button:
                 button.setStyleSheet(window_control_style)
-
-        # Update GitHub button icon color
-        github_button = self.findChild(QPushButton, "github_button")
-        if github_button:
-            github_button.setIcon(qta.icon("fa5b.github", color=colors["button_text"]))
 
         # Update theme button icon
         if self.dark_mode:
@@ -699,7 +688,7 @@ class MainWindow(QMainWindow):
         tray_menu = QMenu()
 
         # Add a title item (non-clickable)
-        title_action = tray_menu.addAction("Grunty 👨🏽‍💻")
+        title_action = tray_menu.addAction("Quacksupport 🦆")
         title_action.setEnabled(False)
         tray_menu.addSeparator()
 
@@ -751,7 +740,7 @@ class MainWindow(QMainWindow):
 
         # Show a notification when the app starts
         self.tray_icon.showMessage(
-            "Grunty is running",
+            "Quacksupport is running",
             "Click the robot icon in the menu bar to get started!",
             QSystemTrayIcon.MessageIcon.Information,
             3000,
